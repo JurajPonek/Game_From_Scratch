@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <string_view>
 #include "shader.hpp"
+#include "material.hpp"
 
 namespace  
 {
@@ -39,11 +40,6 @@ static constexpr auto fragment_shader_source = R"(
 )";
 }
 
-
-
-
-
-
 int main()
 {
     game::Window window{800u, 600u};
@@ -56,15 +52,7 @@ int main()
     };
     auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
     auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
-    auto program = game::AutoRelease<::GLuint>
-    {
-        ::glCreateProgram(), ::glDeleteProgram
-    };
-    if (!program) throw std::runtime_error("failed to create program");
-    ::glAttachShader(program, vertex_shader.get_native_handle());
-    ::glAttachShader(program, fragment_shader.get_native_handle());
-    ::glLinkProgram(program);
-
+    auto material = game::Material{vertex_shader, fragment_shader};
     ::GLuint vao{};
     ::glGenVertexArrays(1, &vao);
     ::GLuint vbo{};
@@ -88,7 +76,7 @@ int main()
     while(window.running())
     {
         ::glClear(GL_COLOR_BUFFER_BIT);
-        ::glUseProgram(program);
+        ::glUseProgram(material.get_native_handle());
         ::glBindVertexArray(vao);
         ::glDrawArrays(GL_TRIANGLES, 0, 3);
         window.swap();
