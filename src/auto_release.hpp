@@ -1,6 +1,7 @@
 #pragma once
 #include <concepts>
 #include <functional>
+#include <memory>
 namespace game
 {
     template<typename T, T Invalid={}>
@@ -51,6 +52,11 @@ namespace game
             operator T() const
             {
                 return m_object;
+            }
+
+            T* operator&() noexcept
+            {
+                return std::addressof(m_object);
             }
 
 

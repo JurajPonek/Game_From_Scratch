@@ -1,5 +1,6 @@
 
 #include "auto_release.hpp"
+#include "mesh.hpp"
 #include "src/opengl.hpp"
 #include "vendor/opengl/glext.h"
 #include "window.hpp"
@@ -43,29 +44,10 @@ static constexpr auto fragment_shader_source = R"(
 int main()
 {
     game::Window window{800u, 600u};
-    static constexpr float vertices[] = 
-    {
-        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f,0.0f, 0.0f, 1.0f
-
-    };
     auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
     auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
     auto material = game::Material{vertex_shader, fragment_shader};
-    ::GLuint vao{};
-    ::glGenVertexArrays(1, &vao);
-    ::GLuint vbo{};
-    ::glGenBuffers(1, &vbo);
-    ::glBindVertexArray(vao);
-    ::glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    ::glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
-    ::glEnableVertexAttribArray(0);
-    ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-    ::glEnableVertexAttribArray(1);
-    ::glBindVertexArray(0);
-
+    auto mesh = game::Mesh{};
 
 
 
@@ -77,8 +59,9 @@ int main()
     {
         ::glClear(GL_COLOR_BUFFER_BIT);
         ::glUseProgram(material.get_native_handle());
-        ::glBindVertexArray(vao);
+        mesh.bind();
         ::glDrawArrays(GL_TRIANGLES, 0, 3);
+        mesh.unbind();
         window.swap();
     }
     
