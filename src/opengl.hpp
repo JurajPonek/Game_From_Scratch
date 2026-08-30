@@ -1,0 +1,49 @@
+#pragma once
+
+#include <Windows.h>
+#include <gl/gl.h>
+#include "vendor/opengl/glext.h"
+
+
+
+#define FOR_OPENGL_FUNCTIONS(DO) \
+    DO(PFNGLCREATESHADERPROC, glCreateShader) \
+    DO(PFNGLSHADERSOURCEPROC, glShaderSource) \
+    DO(PFNGLCOMPILESHADERPROC, glCompileShader) \
+    DO(PFNGLGETSHADERIVPROC, glGetShaderiv) \
+    DO(PFNGLGETSHADERINFOLOGPROC, glGetShaderInfoLog) \
+    DO(PFNGLATTACHSHADERPROC, glAttachShader) \
+    DO(PFNGLDETACHSHADERPROC, glDetachShader) \
+    DO(PFNGLDELETESHADERPROC, glDeleteShader) \
+    DO(PFNGLCREATEPROGRAMPROC, glCreateProgram) \
+    DO(PFNGLLINKPROGRAMPROC, glLinkProgram) \
+    DO(PFNGLVALIDATEPROGRAMPROC, glValidateProgram) \
+    DO(PFNGLUSEPROGRAMPROC, glUseProgram) \
+    DO(PFNGLGETPROGRAMIVPROC, glGetProgramiv) \
+    DO(PFNGLGETPROGRAMINFOLOGPROC, glGetProgramInfoLog) \
+    DO(PFNGLDELETEPROGRAMPROC, glDeleteProgram) \
+    DO(PFNGLGENBUFFERSPROC, glGenBuffers) \
+    DO(PFNGLBINDBUFFERPROC, glBindBuffer) \
+    DO(PFNGLBUFFERDATAPROC, glBufferData) \
+    DO(PFNGLBUFFERSUBDATAPROC, glBufferSubData) \
+    DO(PFNGLDELETEBUFFERSPROC, glDeleteBuffers) \
+    DO(PFNGLGENVERTEXARRAYSPROC, glGenVertexArrays) \
+    DO(PFNGLBINDVERTEXARRAYPROC, glBindVertexArray) \
+    DO(PFNGLDELETEVERTEXARRAYSPROC, glDeleteVertexArrays) \
+    DO(PFNGLENABLEVERTEXATTRIBARRAYPROC, glEnableVertexAttribArray) \
+    DO(PFNGLDISABLEVERTEXATTRIBARRAYPROC, glDisableVertexAttribArray) \
+    DO(PFNGLVERTEXATTRIBPOINTERPROC, glVertexAttribPointer) \
+    DO(PFNGLGETUNIFORMLOCATIONPROC, glGetUniformLocation) \
+    DO(PFNGLUNIFORM1FPROC, glUniform1f) \
+    DO(PFNGLUNIFORM2FPROC, glUniform2f) \
+    DO(PFNGLUNIFORM3FPROC, glUniform3f) \
+    DO(PFNGLUNIFORM4FPROC, glUniform4f) \
+    DO(PFNGLUNIFORM1IPROC, glUniform1i) \
+    DO(PFNGLUNIFORMMATRIX4FVPROC, glUniformMatrix4fv) \
+    DO(PFNGLACTIVETEXTUREPROC, glActiveTexture) \
+    DO(PFNGLGENERATEMIPMAPPROC, glGenerateMipmap)
+
+
+#define DO_DEFINE(TYPE, NAME) inline TYPE NAME;
+FOR_OPENGL_FUNCTIONS(DO_DEFINE)
+
