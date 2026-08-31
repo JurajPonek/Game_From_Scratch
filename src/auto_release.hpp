@@ -37,7 +37,7 @@ namespace game
                 swap(newObj);
                 return *this;
 
-            }
+          }
             void swap(AutoRelease& other)
             {
                 std::ranges::swap(m_object, other.m_object);

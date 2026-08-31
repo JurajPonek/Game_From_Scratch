@@ -3,6 +3,7 @@ add_executable(game main.cpp
                     shader.cpp
                     material.cpp
                     mesh.cpp
+                    renderer.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})

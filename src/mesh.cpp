@@ -18,7 +18,7 @@ namespace game
 {
     Mesh::Mesh() 
     : m_vao({0u, [](auto vao){::glDeleteVertexArrays(1, &vao);}}), 
-    m_vbo({0u, [](auto vbo){glDeleteBuffers(1, &vbo);}})
+      m_vbo({0u, [](auto vbo){glDeleteBuffers(1, &vbo);}})
     {
         ::glGenVertexArrays(1, &m_vao);
         ::glGenBuffers(1, &m_vbo);

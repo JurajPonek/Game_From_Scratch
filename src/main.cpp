@@ -10,6 +10,7 @@
 #include <string_view>
 #include "shader.hpp"
 #include "material.hpp"
+#include "renderer.hpp"
 
 namespace  
 {
@@ -44,24 +45,18 @@ static constexpr auto fragment_shader_source = R"(
 int main()
 {
     game::Window window{800u, 600u};
-    auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
-    auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
+    const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
+    const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
     auto material = game::Material{vertex_shader, fragment_shader};
+    const auto renderer = game::Renderer{std::move(material)};
     auto mesh = game::Mesh{};
 
 
 
 
-
-
-    ::glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     while(window.running())
     {
-        ::glClear(GL_COLOR_BUFFER_BIT);
-        ::glUseProgram(material.get_native_handle());
-        mesh.bind();
-        ::glDrawArrays(GL_TRIANGLES, 0, 3);
-        mesh.unbind();
+        renderer.render();
         window.swap();
     }
     
