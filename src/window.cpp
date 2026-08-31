@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include "auto_release.hpp"
+#include <gl/gl.h>
 #include <libloaderapi.h>
 #include <minwindef.h>
 #include <windef.h>
@@ -8,6 +9,7 @@
 #include <stdexcept>
 #include <print>
 #include "opengl.hpp"
+#include "vendor/opengl/glext.h"
 #include "vendor/opengl/wglext.h"
 #define NOMINMAX
 
@@ -18,6 +20,19 @@ namespace
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB{};
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB{};
     bool gameRunning = true;
+
+    void APIENTRY opengl_debug_callback(GLenum source,
+        [[maybe_unused]] GLenum type,
+        [[maybe_unused]] GLuint id,
+        [[maybe_unused]] GLenum severity, 
+        [[maybe_unused]] GLsizei length,
+        [[maybe_unused]] const GLchar *message,
+        [[maybe_unused]] const void *userParam)
+    {
+        std::println("{} {} {} {} {} {}", source, type, id, severity, length, message);
+    }
+
+
     LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     {
         switch (msg) 
@@ -157,6 +172,13 @@ namespace
         #define RESOLVE(TYPE, NAME) resolve_gl_function(NAME, #NAME);
         FOR_OPENGL_FUNCTIONS(RESOLVE);
     }
+
+    void setup_opengl_debug()
+    {
+        ::glEnable(GL_DEBUG_OUTPUT);
+        ::glDebugMessageCallback(opengl_debug_callback, nullptr);
+
+    }
 };
 
 
@@ -217,7 +239,7 @@ namespace game
         resolve_wgl_functions(m_windowClass.hInstance);
         init_opengl(m_dc);
         resolve_global_opengl_functions();
-
+        setup_opengl_debug();
         
 
 

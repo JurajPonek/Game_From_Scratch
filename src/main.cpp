@@ -1,16 +1,12 @@
 
-#include "auto_release.hpp"
+
 #include "mesh.hpp"
-#include "src/opengl.hpp"
-#include "vendor/opengl/glext.h"
 #include "window.hpp"
-#include "opengl.hpp"
-#include <gl/gl.h>
-#include <stdexcept>
 #include <string_view>
 #include "shader.hpp"
 #include "material.hpp"
 #include "renderer.hpp"
+#include "log.hpp"
 
 namespace  
 {
@@ -50,9 +46,10 @@ int main()
     auto material = game::Material{vertex_shader, fragment_shader};
     const auto renderer = game::Renderer{std::move(material)};
     auto mesh = game::Mesh{};
-
-
-
+    game::log::debug("my arg: {}, {}", 1, "Test");
+    game::log::error("my arg: {}", 1);
+    game::log::warn("my arg: {}", 1);
+    game::log::info("my arg: {}", 1);
 
     while(window.running())
     {
