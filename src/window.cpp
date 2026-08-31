@@ -11,8 +11,7 @@
 #include "opengl.hpp"
 #include "vendor/opengl/glext.h"
 #include "vendor/opengl/wglext.h"
-#define NOMINMAX
-
+#include "error.hpp"
 
 
 namespace 
@@ -22,14 +21,14 @@ namespace
     bool gameRunning = true;
 
     void APIENTRY opengl_debug_callback(GLenum source,
-        [[maybe_unused]] GLenum type,
-        [[maybe_unused]] GLuint id,
-        [[maybe_unused]] GLenum severity, 
-        [[maybe_unused]] GLsizei length,
-        [[maybe_unused]] const GLchar *message,
-        [[maybe_unused]] const void *userParam)
+        GLenum type,
+        GLuint id,
+        GLenum severity, 
+        GLsizei,
+        const GLchar *message,
+        const void *)
     {
-        std::println("{} {} {} {} {} {}", source, type, id, severity, length, message);
+        std::println("{} {} {} {} {}", source, type, id, severity, message);
     }
 
 
@@ -48,7 +47,7 @@ namespace
     void resolve_gl_function(T& function, const std::string& name)
     {
         const auto address = ::wglGetProcAddress(name.c_str());
-        if (!address) throw std::runtime_error("could not resolve function address");
+        game::ensure(address, "could not resolve function address");
         function = reinterpret_cast<T>(address);
         
     }
@@ -62,10 +61,7 @@ namespace
             .hInstance = instance,
             .lpszClassName = "dummy window",
         };
-        if (::RegisterClassA(&wc) == 0 )
-        {
-            throw std::runtime_error("failed create dummy window");
-        }
+        game::ensure(::RegisterClassA(&wc) != 0, "failed create dummy window");
         auto dummy_window = game::AutoRelease<::HWND>
         {
             ::CreateWindowExA(
@@ -87,8 +83,7 @@ namespace
 
         };
         auto dc = game::AutoRelease<::HDC>{::GetDC(dummy_window), [&dummy_window](auto dc) {::ReleaseDC(dummy_window, dc);}};
-        if (!dc)
-            throw std::runtime_error("Could not get dummy dc"); 
+        game::ensure(dc, "Could not get dummy dc");
         auto pfd = ::PIXELFORMATDESCRIPTOR
         {
             .nSize = sizeof(::PIXELFORMATDESCRIPTOR),
@@ -102,22 +97,16 @@ namespace
             .iLayerType = PFD_MAIN_PLANE, 
         };
         auto pixel_format = ::ChoosePixelFormat(dc, &pfd);
-        if (pixel_format == 0)
-            throw std::runtime_error("Failed to choose pixel format");
-        if (::SetPixelFormat(dc, pixel_format, &pfd) == FALSE)
-        {
-            throw  std::runtime_error("Failed to set pixel format");
-        }
+        game::ensure(pixel_format != 0, "Failed to choose pixel format");
+        game::ensure(::SetPixelFormat(dc, pixel_format, &pfd) == TRUE, "Failed to set pixel format");
         const auto context = game::AutoRelease<::HGLRC>{::wglCreateContext(dc), ::wglDeleteContext};
-        if (!context) throw std::runtime_error("Failed to create wgl context");
-        if (::wglMakeCurrent(dc, context) == FALSE) throw std::runtime_error("Failed to make current context");
+        game::ensure(context ,"Failed to create wgl context");
+        game::ensure(::wglMakeCurrent(dc, context) == TRUE ,"Failed to make current context");
 
         resolve_gl_function(wglCreateContextAttribsARB, "wglCreateContextAttribsARB");
         resolve_gl_function(wglChoosePixelFormatARB, "wglChoosePixelFormatARB");
 
-
-
-        if (::wglMakeCurrent(dc, 0) == FALSE) throw std::runtime_error("Failed to unbind current context");
+        game::ensure(::wglMakeCurrent(dc, 0) == TRUE,"Failed to unbind current context");
 
         
 
@@ -149,10 +138,10 @@ namespace
         auto pixel_format = 0;
         auto num_formats = UINT{};
         ::wglChoosePixelFormatARB(dc, pixel_format_attribs, 0,1,&pixel_format, &num_formats);
-        if (num_formats == 0u) throw std::runtime_error("Could not choose pixel format");
+        game::ensure(num_formats != 0u, "Could not choose pixel format");
         auto pfd = ::PIXELFORMATDESCRIPTOR{};
-        if (::DescribePixelFormat(dc, pixel_format, sizeof(pfd), &pfd) == 0) throw std::runtime_error("failed to describe pixel format");
-        if (::SetPixelFormat(dc, pixel_format, &pfd) == FALSE) throw std::runtime_error("fialed to set pixel format");
+        game::ensure(::DescribePixelFormat(dc, pixel_format, sizeof(pfd), &pfd) != 0,"failed to describe pixel format");
+        game::ensure(::SetPixelFormat(dc, pixel_format, &pfd) == TRUE,"fialed to set pixel format");
         int gl_attribs[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
         WGL_CONTEXT_MINOR_VERSION_ARB, 6,
@@ -161,9 +150,9 @@ namespace
 };
 
         auto context = ::wglCreateContextAttribsARB(dc, nullptr, gl_attribs);
-        if (!context) throw std::runtime_error("failed to create wgl context");
+        game::ensure(context,"failed to create wgl context");
 
-        if(::wglMakeCurrent(dc, context) == FALSE) throw std::runtime_error ("failed to make current context");
+        game::ensure(::wglMakeCurrent(dc, context) == TRUE,"failed to make current context");
 
 
     }
@@ -197,13 +186,7 @@ namespace game
             
         };
 
-        
-
-        if (::RegisterClassA(&m_windowClass) == 0 )
-        {
-            throw std::runtime_error("failed to register class");
-        }
-
+        ensure(::RegisterClassA(&m_windowClass) != 0 ,"failed to register class");
 
         ::RECT rect{
             .left = {},
@@ -211,10 +194,8 @@ namespace game
             .right = static_cast<int>(width),
             .bottom = static_cast<int>(height)
         };
-        if (::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false) == 0)
-        {
-            throw std::runtime_error("Could not resize window");
-        }
+        ensure(::AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false) != 0, "Could not resize window");
+
         m_handle = { ::CreateWindowExA(
                 0,
                 m_windowClass.lpszClassName,

@@ -3,6 +3,7 @@
 #include "vendor/opengl/glext.h"
 #include <gl/gl.h>
 #include <stdexcept>
+#include "error.hpp"
 
 
 namespace  
@@ -36,7 +37,8 @@ namespace game
         ::glCompileShader(m_handle);
         ::GLint res{};
         ::glGetShaderiv(m_handle, GL_COMPILE_STATUS, &res);
-        if (!res) throw std::runtime_error("Failed to compile shader");
+        
+        ensure(res, "Failed to compile shader");
     }
     ShaderType Shader::get_type() const
     {

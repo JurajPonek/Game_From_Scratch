@@ -2,11 +2,16 @@
 
 #include "mesh.hpp"
 #include "window.hpp"
+#include <print>
+#include <stdexcept>
 #include <string_view>
 #include "shader.hpp"
 #include "material.hpp"
 #include "renderer.hpp"
 #include "log.hpp"
+#include <stacktrace>
+#include <iostream>
+#include "exception.hpp"
 
 namespace  
 {
@@ -38,25 +43,38 @@ static constexpr auto fragment_shader_source = R"(
 )";
 }
 
+
 int main()
 {
-    game::Window window{800u, 600u};
-    const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
-    const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
-    auto material = game::Material{vertex_shader, fragment_shader};
-    const auto renderer = game::Renderer{std::move(material)};
-    auto mesh = game::Mesh{};
-    game::log::debug("my arg: {}, {}", 1, "Test");
-    game::log::error("my arg: {}", 1);
-    game::log::warn("my arg: {}", 1);
-    game::log::info("my arg: {}", 1);
-
-    while(window.running())
+    try 
     {
-        renderer.render();
-        window.swap();
-    }
+        game::Window window{800u, 600u};
+        const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
+        const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
+        auto material = game::Material{vertex_shader, fragment_shader};
+        const auto renderer = game::Renderer{std::move(material)};
+        auto mesh = game::Mesh{};
+        game::log::debug("my arg: {}, {}", 1, "Test");
+        game::log::error("my arg: {}", 1);
+        game::log::warn("my arg: {}", 1);
+        game::log::info("my arg: {}", 1);
+
+        while(window.running())
+        {
+            renderer.render();
+            window.swap();
+        }
     
+    } catch (game::Exception& err) 
+    {
+        std::println(std::cerr, "exception {}", err);
+    } catch(...)
+    {
+        std::println(std::cerr, "Unknown exception");
+    }
+
+
+
     return 0;
     
 

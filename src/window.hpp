@@ -1,7 +1,6 @@
 #pragma once
 #include <Windows.h>
 #include <winuser.h>
-#define NOMINMAX
 #include <cstdint>
 #include "auto_release.hpp"
 namespace game

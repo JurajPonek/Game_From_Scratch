@@ -7,3 +7,4 @@ bin/
 *.pdb
 *.sln
 *.vcxproj
+*.cache
