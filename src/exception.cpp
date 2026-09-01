@@ -2,7 +2,7 @@
 #include <stacktrace>
 #include <stdexcept>
 #include <string>
-#include <ranges>
+
 
 namespace game
 {
@@ -11,6 +11,9 @@ namespace game
     {
 
     }
+    
+    
+
     std::string Exception::stacktrace() const
     {
         return std::to_string(m_trace);

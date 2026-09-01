@@ -3,15 +3,14 @@
 #include "mesh.hpp"
 #include "window.hpp"
 #include <print>
-#include <stdexcept>
 #include <string_view>
 #include "shader.hpp"
 #include "material.hpp"
 #include "renderer.hpp"
 #include "log.hpp"
-#include <stacktrace>
 #include <iostream>
 #include "exception.hpp"
+
 
 namespace  
 {
@@ -22,10 +21,13 @@ namespace
     layout(location = 1) in vec3 in_color;
 
     out vec3 out_color;
+    uniform mat4 model;
+    uniform mat4 view;
+    uniform mat4 projection;
     
     void main()
     {
-        gl_Position = vec4(position, 1.0);
+        gl_Position = projection * view * model * vec4(position, 1.0);
         out_color = in_color;
     }
 )";
@@ -54,10 +56,6 @@ int main()
         auto material = game::Material{vertex_shader, fragment_shader};
         const auto renderer = game::Renderer{std::move(material)};
         auto mesh = game::Mesh{};
-        game::log::debug("my arg: {}, {}", 1, "Test");
-        game::log::error("my arg: {}", 1);
-        game::log::warn("my arg: {}", 1);
-        game::log::info("my arg: {}", 1);
 
         while(window.running())
         {

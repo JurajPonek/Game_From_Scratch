@@ -38,7 +38,7 @@ namespace game
         ::GLint res{};
         ::glGetShaderiv(m_handle, GL_COMPILE_STATUS, &res);
         
-        ensure(res, "Failed to compile shader");
+        ensure(res, "Failed to compile {} shader", m_type);
     }
     ShaderType Shader::get_type() const
     {

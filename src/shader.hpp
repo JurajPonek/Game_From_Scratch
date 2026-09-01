@@ -1,6 +1,9 @@
 #pragma once
+#include <format>
 #include <string_view>
+#include <utility>
 #include "auto_release.hpp"
+#include "exception.hpp"
 #include "opengl.hpp"
 
 namespace game
@@ -23,4 +26,27 @@ namespace game
             ShaderType m_type;
 
     };
+
+
 }
+
+template<>
+    struct std::formatter<game::ShaderType>
+    {
+        constexpr auto parse(std::format_parse_context& ctx)
+        {
+            return std::cbegin(ctx);
+        }
+        auto format(const game::ShaderType& shader_type, std::format_context& ctx) const
+        {
+            switch (shader_type) 
+            {
+                using enum game::ShaderType;
+                case VERTEX:
+                    return std::format_to(ctx.out(), "{}\n", "VERTEX");
+                case FRAGMENT:
+                    return std::format_to(ctx.out(), "{}\n", "FRAGMENT");
+            }
+            throw game::Exception("Unknown shader type", std::to_underlying(shader_type));
+        }  
+    };

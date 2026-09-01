@@ -13,7 +13,7 @@ target_link_libraries(game PRIVATE
     stdc++exp 
     backtrace
 )
-target_compile_features(game PUBLIC cxx_std_23)
+target_compile_features(game PUBLIC cxx_std_26)
 target_compile_options(game PUBLIC 
     -Wall 
     -Werror 

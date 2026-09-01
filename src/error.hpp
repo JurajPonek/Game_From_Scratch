@@ -11,7 +11,7 @@ namespace game
     void ensure(bool predicate, std::string_view message, Args&& ...args)
     {
         if (!predicate)
-            throw Exception(std::vformat(message, std::make_format_args(std::forward(args)...)));
+            throw Exception(std::vformat(message, std::make_format_args(std::forward<Args>(args)...)));
     }
 
 

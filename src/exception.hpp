@@ -13,6 +13,11 @@ namespace game
         public:
             Exception(const std::string& what);
             std::string stacktrace() const;
+            template<typename... Args>
+            Exception(std::format_string<Args...> fmt, Args&&... args)
+                : std::runtime_error(std::format(fmt, std::forward<Args>(args)...)), 
+                    m_trace(std::stacktrace::current(1))
+            {}
         private:
             std::stacktrace m_trace;
     };

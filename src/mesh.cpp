@@ -2,14 +2,15 @@
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "auto_release.hpp"
+#include "vertex_data.hpp"
 
 namespace 
 {
-    static constexpr float vertices[] = 
+    static constexpr game::VertexData vertex_data[] = 
     {
-        0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.0f,0.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, 0.0f,0.0f, 0.0f, 1.0f
+        game::VertexData{{0.0f, 0.5f, 0.0f}, {1.0f, 0.0f, 0.0f} },
+        game::VertexData{{-0.5f, -0.5f, 0.0f},{0.0f, 1.0f, 0.0f}},
+        game::VertexData{{0.5f, -0.5f, 0.0f},{0.0f, 0.0f, 1.0f}}
 
     };
 }
@@ -24,7 +25,7 @@ namespace game
         ::glGenBuffers(1, &m_vbo);
         ::glBindVertexArray(m_vao);
         ::glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-        ::glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+        ::glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
         ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
         ::glEnableVertexAttribArray(0);
         ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));

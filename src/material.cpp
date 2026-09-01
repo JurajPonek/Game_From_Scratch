@@ -1,7 +1,7 @@
 
 #include "material.hpp"
 #include "shader.hpp"
-#include <stdexcept>
+
 #include "error.hpp"
 
 namespace game
