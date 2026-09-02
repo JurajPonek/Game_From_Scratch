@@ -6,6 +6,7 @@ add_executable(game main.cpp
                     renderer.cpp
                     exception.cpp
                     camera.cpp
+                    entity.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})

@@ -1,6 +1,8 @@
 
 
+#include "entity.hpp"
 #include "mesh.hpp"
+#include "scene.hpp"
 #include "window.hpp"
 #include <print>
 #include <string_view>
@@ -56,12 +58,16 @@ int main()
         const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
         const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
         auto material = game::Material{vertex_shader, fragment_shader};
-        const auto renderer = game::Renderer{std::move(material)};
+        auto mesh = game::Mesh{};
+        const auto renderer = game::Renderer{};
+        auto entity1 = game::Entity{&mesh, &material, {0.0f,0.0f,0.0f}};
+        auto entity2 = game::Entity{&mesh, &material, {0.0f,2.0f,0.0f}};
+        auto scene = game::Scene{{&entity1, &entity2}};
         const auto camera = game::Camera{{3.0f, 0.0f, 5.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f}, std::numbers::pi_v<float> / 4, 800.0f, 600.0f, 0.1, 100.0f};
 
         while(window.running())
         {
-            renderer.render(camera );
+            renderer.render(camera, scene);
             window.swap();
         }
     
