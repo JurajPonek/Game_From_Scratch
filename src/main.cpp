@@ -10,6 +10,8 @@
 #include "log.hpp"
 #include <iostream>
 #include "exception.hpp"
+#include "camera.hpp"
+#include <numbers>
 
 
 namespace  
@@ -55,10 +57,11 @@ int main()
         const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
         auto material = game::Material{vertex_shader, fragment_shader};
         const auto renderer = game::Renderer{std::move(material)};
+        const auto camera = game::Camera{{3.0f, 0.0f, 5.0f}, {0.0f, 0.0f, 0.0f},{0.0f, 1.0f, 0.0f}, std::numbers::pi_v<float> / 4, 800.0f, 600.0f, 0.1, 100.0f};
 
         while(window.running())
         {
-            renderer.render();
+            renderer.render(camera );
             window.swap();
         }
     

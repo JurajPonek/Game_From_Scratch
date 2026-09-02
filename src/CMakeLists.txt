@@ -5,6 +5,7 @@ add_executable(game main.cpp
                     mesh.cpp
                     renderer.cpp
                     exception.cpp
+                    camera.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})
