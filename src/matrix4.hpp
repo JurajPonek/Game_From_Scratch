@@ -58,6 +58,23 @@ namespace game
             }
             friend constexpr Matrix4& operator*=(Matrix4& mat1, const Matrix4& mat2);
             friend constexpr Matrix4 operator*(const Matrix4& mat1, const Matrix4& mat2);
+            
+            inline static constexpr Matrix4 perspective(float fov_radians, float width, float height, float near_p, float far_p)
+            {
+                const float aspect = width / height;
+                const float tan_half_fov = std::tan(fov_radians / 2.0f); // Pozor: std::tan je constexpr až v C++26
+
+                Matrix4 matrix{};
+                matrix.m_data.fill(0.0f);
+                matrix.m_data[0] = 1.0f / (aspect * tan_half_fov);
+                matrix.m_data[5] = 1.0f / tan_half_fov;
+                matrix.m_data[10] = -(far_p + near_p) / (far_p - near_p);
+                matrix.m_data[11] = -1.0f;
+                matrix.m_data[14] = -(2.0f * far_p * near_p) / (far_p - near_p);
+                matrix.m_data[15] = 0.0f;
+
+                return matrix;
+            }   
         private:
             std::array<float, 16> m_data;
 
@@ -86,5 +103,6 @@ namespace game
         auto tmp = Matrix4{mat1};
         return tmp *= mat2;
     }
+
 
 }

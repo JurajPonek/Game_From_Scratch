@@ -55,7 +55,6 @@ int main()
         const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
         auto material = game::Material{vertex_shader, fragment_shader};
         const auto renderer = game::Renderer{std::move(material)};
-        auto mesh = game::Mesh{};
 
         while(window.running())
         {

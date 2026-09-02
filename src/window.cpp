@@ -162,7 +162,7 @@ namespace
         FOR_OPENGL_FUNCTIONS(RESOLVE);
     }
 
-    void setup_opengl_debug()
+    void  setup_opengl_debug()
     {
         ::glEnable(GL_DEBUG_OUTPUT);
         ::glDebugMessageCallback(opengl_debug_callback, nullptr);
@@ -221,6 +221,8 @@ namespace game
         init_opengl(m_dc);
         resolve_global_opengl_functions();
         setup_opengl_debug();
+        //::glEnable(GL_CULL_FACE);
+        ::glEnable(GL_DEPTH_TEST);
         
 
 
