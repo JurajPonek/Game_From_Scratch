@@ -1,6 +1,8 @@
 #pragma once
 #include <Windows.h>
 #include <winuser.h>
+#include "event.hpp"
+#include <optional>
 #include <cstdint>
 #include "auto_release.hpp"
 namespace game
@@ -14,7 +16,7 @@ namespace game
             Window& operator=(const Window&) = delete;
             Window(Window&&) = default;
             Window& operator=(Window&&) = default;
-            bool running() const;
+            std::optional<Event> pump_event() const;
             void swap() const;
 
 

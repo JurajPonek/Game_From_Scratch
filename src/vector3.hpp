@@ -13,6 +13,7 @@ namespace game
         static constexpr Vector3 normalize(const Vector3& vec)
         {
             auto length = std::hypot(vec.x, vec.y, vec.z);
+            if (length == 0.0f) return {0.0f, 0.0f, 0.0f};
             return {vec.x / length, vec.y / length, vec.z / length};
         }
         
@@ -56,6 +57,14 @@ namespace game
     constexpr Vector3 operator-(const Vector3& vec)
     {
         return {-vec.x, -vec.y, -vec.z};
+    }
+    constexpr Vector3 operator*(const Vector3& vec, float scalar)
+    {
+        Vector3 temp{vec};
+        temp.x *= scalar;   
+        temp.y *= scalar;   
+        temp.z *= scalar;   
+        return temp;
     }
 
 

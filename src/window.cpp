@@ -3,12 +3,19 @@
 #include <gl/gl.h>
 #include <libloaderapi.h>
 #include <minwindef.h>
+#include <optional>
+#include <queue>
 #include <windef.h>
 #include <wingdi.h>
 #include <winuser.h>
 #include <stdexcept>
 #include <print>
+#include "event.hpp"
+#include "key.hpp"
+#include "key_event.hpp"
+#include "log.hpp"
 #include "opengl.hpp"
+#include "stop_event.hpp"
 #include "vendor/opengl/glext.h"
 #include "vendor/opengl/wglext.h"
 #include "error.hpp"
@@ -18,7 +25,7 @@ namespace
 {
     PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB{};
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB{};
-    bool gameRunning = true;
+    auto g_event_queqe = std::queue<game::Event>{};
 
     void APIENTRY opengl_debug_callback(GLenum source,
         GLenum type,
@@ -36,8 +43,17 @@ namespace
     {
         switch (msg) 
         {
-            case WM_CLOSE : gameRunning = false; break;
-            case WM_KEYDOWN : std::println("Key down"); break;
+            case WM_CLOSE : g_event_queqe.emplace(game::StopEvent{}); break;
+            case WM_KEYUP : 
+            {
+                g_event_queqe.emplace(game::KeyEvent{static_cast<game::Key>(wparam), game::KeyState::UP});
+                break;
+            }
+            case WM_KEYDOWN : 
+            {
+                g_event_queqe.emplace(game::KeyEvent{static_cast<game::Key>(wparam), game::KeyState::DOWN});
+                break;
+            } 
         }
         return ::DefWindowProcA(hwnd, msg, wparam
             , lparam);
@@ -228,7 +244,7 @@ namespace game
 
     }
 
-    bool Window::running() const
+    std::optional<Event> Window::pump_event() const
     {
         ::MSG message{};
         while(::PeekMessageA(&message, nullptr, 0, 0, PM_REMOVE) != 0   )
@@ -236,20 +252,18 @@ namespace game
             ::TranslateMessage(&message);
             ::DispatchMessageA(&message);
         }
-        return gameRunning;
+        if (!g_event_queqe.empty())
+        {
+
+            const auto event = g_event_queqe.front();
+            g_event_queqe.pop();
+            return event;
+        }
+        return {};
     }
 
     void Window::swap() const
     {
         ::SwapBuffers(m_dc); 
     }
-
-
-            
-
-            
-
-
-
-
-    };
+};

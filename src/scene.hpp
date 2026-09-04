@@ -8,7 +8,7 @@ namespace game
 {
     struct Scene
     {
-        const std::vector<Entity*> m_entities;
+        const std::vector<const Entity*> m_entities;
     };
 
 }

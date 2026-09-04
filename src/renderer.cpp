@@ -23,7 +23,7 @@ namespace game
             const auto model_location = ::glGetUniformLocation(material->get_native_handle(), "model");
             ::glUniformMatrix4fv(model_location, 1, GL_FALSE, entity->get_model_matrix().data());
             
-            
+                    
 
             const auto view_location = ::glGetUniformLocation(material->get_native_handle(), "view");
             ::glUniformMatrix4fv(view_location, 1, GL_FALSE, camera.get_view().data());
