@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include <hidusage.h>
 #include "auto_release.hpp"
 #include <gl/gl.h>
 #include <libloaderapi.h>
@@ -14,6 +15,7 @@
 #include "key.hpp"
 #include "key_event.hpp"
 #include "log.hpp"
+#include "mouse_event.hpp"
 #include "opengl.hpp"
 #include "stop_event.hpp"
 #include "vendor/opengl/glext.h"
@@ -54,6 +56,19 @@ namespace
                 g_event_queqe.emplace(game::KeyEvent{static_cast<game::Key>(wparam), game::KeyState::DOWN});
                 break;
             } 
+            case WM_INPUT:
+            {
+                auto raw = ::RAWINPUT{};
+                auto dwSize = ::UINT{sizeof(::RAWINPUT)};
+                game::ensure(::GetRawInputData(reinterpret_cast<::HRAWINPUT>(lparam), RID_INPUT, &raw, &dwSize, sizeof(::RAWINPUTHEADER)) != static_cast<::UINT>(-1), "Failed to get raw input");
+                if (raw.header.dwType == RIM_TYPEMOUSE)
+                {
+                    const auto x= raw.data.mouse.lLastX;
+                    const auto y= raw.data.mouse.lLastY;
+                    g_event_queqe.emplace(game::MouseEvent{static_cast<float>(x), static_cast<float>(y)});
+                }
+                break;
+            }
         }
         return ::DefWindowProcA(hwnd, msg, wparam
             , lparam);
@@ -232,11 +247,21 @@ namespace game
 
         ::ShowWindow(m_handle, SW_SHOW);
         ::UpdateWindow(m_handle);
+        
+        const auto rid = ::RAWINPUTDEVICE
+        {
+            .usUsagePage = HID_USAGE_PAGE_GENERIC,
+            .usUsage = HID_USAGE_GENERIC_MOUSE,
+            .dwFlags = RIDEV_INPUTSINK,    
+            .hwndTarget = m_handle
+        };
+       ensure(::RegisterRawInputDevices(&rid, 1, sizeof(rid)) == TRUE, "Failed to register input devices");
 
         resolve_wgl_functions(m_windowClass.hInstance);
         init_opengl(m_dc);
         resolve_global_opengl_functions();
         setup_opengl_debug();
+
         //::glEnable(GL_CULL_FACE);
         ::glEnable(GL_DEPTH_TEST);
         

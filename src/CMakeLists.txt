@@ -8,6 +8,7 @@ add_executable(game main.cpp
                     camera.cpp
                     entity.cpp
                     key_event.cpp
+                    mouse_event.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})

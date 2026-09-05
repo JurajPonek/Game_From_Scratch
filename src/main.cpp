@@ -5,6 +5,7 @@
 #include "key.hpp"
 #include "key_event.hpp"
 #include "mesh.hpp"
+#include "mouse_event.hpp"
 #include "scene.hpp"
 #include "stop_event.hpp"
 #include "vector3.hpp"
@@ -109,19 +110,39 @@ int main()
                         }
                         key_states[arg.get_key()] = arg.get_state() == game::KeyState::DOWN ? true : false;
                     }
-
+                    else if constexpr (std::same_as<T, game::MouseEvent>)
+                    {
+                        static constexpr float sensitivity = 0.001f;
+                        const float delta_x = arg.get_delta_x() * sensitivity;
+                        const float delta_y = arg.get_delta_y() * sensitivity;                        camera.adjust_yaw(delta_x); 
+                        camera.adjust_pitch(-delta_y);
+                    }
                 }
 
                 ,*event);
                 event = window.pump_event();
             }
-            auto velocity = game::Vector3
+            auto walk_direction = game::Vector3{0.0f,0.0f,0.0f};
+            if (key_states[game::Key::D])
             {
-                (key_states[game::Key::D] ? 1.0f : 0.0f) + (key_states[game::Key::A] ?  -1.0f : 0.0f),
-                0.0f,
-                (key_states[game::Key::S] ? 1.0f : 0.0f) + (key_states[game::Key::W] ?  -1.0f : 0.0f),
-            };
-            camera.translate(game::Vector3::normalize(velocity) * speed * dt);
+                walk_direction += camera.get_right();
+            }
+            if (key_states[game::Key::A])
+            {
+                walk_direction += -camera.get_right();
+            }
+            if (key_states[game::Key::W])
+            {
+                walk_direction += camera.get_direction();
+            }
+            if (key_states[game::Key::S])
+            {
+                walk_direction += -camera.get_direction();
+            }
+
+            walk_direction = game::Vector3::normalize(walk_direction);
+
+            camera.translate(game::Vector3::normalize(walk_direction) * speed * dt);
             renderer.render(camera, scene);
             window.swap();
             

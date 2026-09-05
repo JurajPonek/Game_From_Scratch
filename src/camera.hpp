@@ -15,12 +15,18 @@ namespace game
             std::span<const float, 16> get_view() const;
             std::span<const float, 16> get_projection() const;
             void translate(const Vector3& translation);
+            Vector3 get_direction() const;
+            Vector3 get_right() const;
+            void adjust_yaw(float adjust);
+            void adjust_pitch(float adjust);
         private:
             Matrix4 m_view;
             Matrix4 m_projection;
             Vector3 m_position;
             Vector3 m_direction;
             Vector3 m_up;
+            float m_pitch;
+            float m_yaw;
                 
 
     };
