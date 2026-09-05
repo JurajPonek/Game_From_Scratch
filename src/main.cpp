@@ -1,32 +1,31 @@
-#include <chrono>
-#include <ranges>
-#include <unordered_map>
+#include "camera.hpp"
 #include "entity.hpp"
+#include "exception.hpp"
 #include "key.hpp"
 #include "key_event.hpp"
+#include "log.hpp"
+#include "material.hpp"
 #include "mesh.hpp"
 #include "mouse_event.hpp"
+#include "renderer.hpp"
 #include "scene.hpp"
+#include "shader.hpp"
 #include "stop_event.hpp"
 #include "vector3.hpp"
 #include "window.hpp"
+#include <chrono>
 #include <concepts>
-#include <print>
-#include <string_view>
-#include "shader.hpp"
-#include "material.hpp"
-#include "renderer.hpp"
-#include "log.hpp"
 #include <iostream>
-#include "exception.hpp"
-#include "camera.hpp"
 #include <numbers>
+#include <print>
+#include <ranges>
+#include <string_view>
 #include <type_traits>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
-
-namespace  
+namespace
 {
     static constexpr auto vertex_shader_source = R"(
     #version 460 core
@@ -46,7 +45,7 @@ namespace
     }
 )";
 
-static constexpr auto fragment_shader_source = R"(
+    static constexpr auto fragment_shader_source = R"(
     #version 460 core
 
     in vec3 out_color;
@@ -57,12 +56,11 @@ static constexpr auto fragment_shader_source = R"(
         frag_color = vec4(out_color, 1.0);
     }
 )";
-}
-
+} // namespace
 
 int main()
 {
-    try 
+    try
     {
         game::Window window{800u, 600u};
         const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
@@ -71,58 +69,69 @@ int main()
         auto mesh = game::Mesh{};
         const auto renderer = game::Renderer{};
         std::vector<game::Entity> entities{};
-        for (auto i {-10}; i < 10; i++)
+        for (auto i{-10}; i < 10; i++)
         {
-            for (auto j {-10}; j < 10; j++)
+            for (auto j{-10}; j < 10; j++)
             {
-                entities.emplace_back(&mesh, &material, 
-                game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j) * 2.5f});
+                entities.emplace_back(&mesh, &material,
+                                      game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j) * 2.5f});
             }
         }
-        
-        const auto scene = game::Scene{entities | std::views::transform([](const auto& e){return &e;}) | std::ranges::to<std::vector>()};
-        auto camera = game::Camera{{0.0f, 0.0f, 6.0f}, {0.0f, 1.0f, 0.0f},{0.0f, 1.0f, 0.0f}, std::numbers::pi_v<float> / 4, 800.0f, 600.0f, 0.1, 100.0f};
+
+        const auto scene = game::Scene{entities | std::views::transform([](const auto& e) { return &e; }) |
+                                       std::ranges::to<std::vector>()};
+        auto camera = game::Camera{{0.0f, 0.0f, 6.0f},
+                                   {0.0f, 1.0f, 0.0f},
+                                   {0.0f, 1.0f, 0.0f},
+                                   std::numbers::pi_v<float> / 4,
+                                   800.0f,
+                                   600.0f,
+                                   0.1,
+                                   100.0f};
         auto running = true;
         auto key_states = std::unordered_map<game::Key, bool>{};
         auto last_time = std::chrono::high_resolution_clock::now();
         float speed = 20.0f;
 
-        while(running)
+        while (running)
         {
             auto current_time = std::chrono::high_resolution_clock::now();
             float dt = std::chrono::duration<float>(current_time - last_time).count();
             last_time = current_time;
             auto event = window.pump_event();
-            while(event && running)
+            while (event && running)
             {
-                std::visit([&](auto&& arg)
-                {
-                    using T = std::decay_t<decltype(arg)>;
-                    if constexpr (std::same_as<T, game::StopEvent>) 
+                std::visit(
+                    [&](auto&& arg)
                     {
-                        running = false;
-                    }
-                    else if constexpr (std::same_as<T, game::KeyEvent>) 
-                    {
-                        if(arg.get_key() == game::Key::ESC)
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::same_as<T, game::StopEvent>)
                         {
                             running = false;
                         }
-                        key_states[arg.get_key()] = arg.get_state() == game::KeyState::DOWN ? true : false;
+                        else if constexpr (std::same_as<T, game::KeyEvent>)
+                        {
+                            if (arg.get_key() == game::Key::ESC)
+                            {
+                                running = false;
+                            }
+                            key_states[arg.get_key()] = arg.get_state() == game::KeyState::DOWN ? true : false;
+                        }
+                        else if constexpr (std::same_as<T, game::MouseEvent>)
+                        {
+                            static constexpr float sensitivity = 0.001f;
+                            const float delta_x = arg.get_delta_x() * sensitivity;
+                            const float delta_y = arg.get_delta_y() * sensitivity;
+                            camera.adjust_yaw(delta_x);
+                            camera.adjust_pitch(-delta_y);
+                        }
                     }
-                    else if constexpr (std::same_as<T, game::MouseEvent>)
-                    {
-                        static constexpr float sensitivity = 0.001f;
-                        const float delta_x = arg.get_delta_x() * sensitivity;
-                        const float delta_y = arg.get_delta_y() * sensitivity;                        camera.adjust_yaw(delta_x); 
-                        camera.adjust_pitch(-delta_y);
-                    }
-                }
 
-                ,*event);
+                    ,
+                    *event);
                 event = window.pump_event();
             }
-            auto walk_direction = game::Vector3{0.0f,0.0f,0.0f};
+            auto walk_direction = game::Vector3{0.0f, 0.0f, 0.0f};
             if (key_states[game::Key::D])
             {
                 walk_direction += camera.get_right();
@@ -145,22 +154,16 @@ int main()
             camera.translate(game::Vector3::normalize(walk_direction) * speed * dt);
             renderer.render(camera, scene);
             window.swap();
-            
-            
         }
-    
-
-
-    } catch (game::Exception& err) 
+    }
+    catch (game::Exception& err)
     {
         std::println(std::cerr, "exception {}", err);
-    } catch(...)
+    }
+    catch (...)
     {
         std::println(std::cerr, "Unknown exception");
     }
 
-
-
-
     return 0;
-    }
+}

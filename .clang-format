@@ -1,0 +1,17 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 120
+Standard: Latest
+
+PointerAlignment: Left
+BreakBeforeBraces: Allman
+NamespaceIndentation: All
+
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: None
+AlignConsecutiveDeclarations: None
+
+MaxEmptyLinesToKeep: 2
+
+FixNamespaceComments: true
+ReflowComments: true

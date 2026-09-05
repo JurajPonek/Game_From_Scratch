@@ -1,0 +1,24 @@
+CompileFlags:
+  Add: [
+    "-std=c++26", 
+    "-Wall", 
+    "-Wno-missing-braces",
+    "-Isrc"
+  ]
+
+Index:
+  Background: Build
+
+Diagnostics:
+  UnusedIncludes: Strict
+  MissingIncludes: Strict
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+  Designators: true
+  TypeNameLimit: 20
+
+Hover:
+  ShowAKA: true

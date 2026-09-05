@@ -1,7 +1,8 @@
 #pragma once
 
-#include <vector>
 #include "entity.hpp"
+#include <vector>
+
 
 
 namespace game
@@ -11,5 +12,4 @@ namespace game
         const std::vector<const Entity*> m_entities;
     };
 
-}
-
+} // namespace game
