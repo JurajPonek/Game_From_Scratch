@@ -33,7 +33,7 @@ namespace game
             ::glUniformMatrix4fv(projection_location, 1, GL_FALSE, camera.get_projection().data());
 
             mesh->bind();
-            ::glDrawArrays(GL_TRIANGLES, 0, 36);
+            ::glDrawElements(GL_TRIANGLES, mesh->get_index_count(), GL_UNSIGNED_INT, reinterpret_cast<void*>(mesh->get_index_offset()));
             mesh->unbind();
         }
     }
