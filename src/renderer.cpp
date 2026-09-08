@@ -15,8 +15,9 @@ namespace game
         for(const auto* entity : scene.m_entities)
         {
              
-            const auto* material = entity->get_material();\
+            const auto* material = entity->get_material();         
             const auto* mesh = entity->get_mesh();
+
         
             ::glUseProgram(material->get_native_handle());
 

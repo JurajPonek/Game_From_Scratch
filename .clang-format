@@ -3,6 +3,11 @@ IndentWidth: 4
 ColumnLimit: 120
 Standard: Latest
 
+
+
+
+
+
 PointerAlignment: Left
 BreakBeforeBraces: Allman
 NamespaceIndentation: All

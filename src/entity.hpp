@@ -12,7 +12,7 @@ namespace game
     class Entity
     {
       public:
-        Entity(const Mesh* mesh, const Material* material, const Vector3& postion);
+        Entity(const Mesh* mesh, const Material* material, const Vector3& position);
 
         std::span<const float> get_model_matrix() const;
         const Mesh* get_mesh() const;

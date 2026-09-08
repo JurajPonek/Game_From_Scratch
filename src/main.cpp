@@ -7,14 +7,18 @@
 #include "material.hpp"
 #include "mesh.hpp"
 #include "mouse_event.hpp"
+#include "opengl.hpp"
 #include "renderer.hpp"
 #include "scene.hpp"
 #include "shader.hpp"
 #include "stop_event.hpp"
 #include "vector3.hpp"
+#include "vendor/opengl/glext.h"
 #include "window.hpp"
+#include <array>
 #include <chrono>
 #include <concepts>
+#include <gl/gl.h>
 #include <iostream>
 #include <numbers>
 #include <print>
@@ -33,11 +37,10 @@ namespace
     layout(location = 0) in vec3 position;
     layout(location = 1) in vec3 in_color;
 
-    out vec3 out_color;
     uniform mat4 model;
     uniform mat4 view;
     uniform mat4 projection;
-    
+    out vec3 out_color;
     void main()
     {
         gl_Position = projection * view * model * vec4(position, 1.0);
@@ -54,9 +57,85 @@ namespace
     void main()
     {
         frag_color = vec4(out_color, 1.0);
+        //frag_color = c;
     }
 )";
 } // namespace
+
+void test()
+{
+    try
+    {
+
+        game::Window window{800u, 600u};
+        const auto vertex_shader = game::Shader(vertex_shader_source, game::ShaderType::VERTEX);
+        const auto fragment_shader = game::Shader(fragment_shader_source, game::ShaderType::FRAGMENT);
+        static constexpr float data[] = {
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 
+            0.5f, -0.5f, 0.0f, 0.0f,  1.0f,  0.0f, 
+            -0.5f, 0.5f, 0.0f, 0.0f, 0.0f,  1.0f,
+            0.5f, 0.5f, 0.0f, 0.0f, 0.0f,  1.0f,
+        };
+        static constexpr unsigned int indices[] = {3, 1, 2
+                                                    , 1, 2, 0};
+
+
+        auto material = game::Material{vertex_shader, fragment_shader};
+        ::GLuint vao{};
+        ::GLuint vbo{};
+        ::GLuint ebo{};
+        ::glGenVertexArrays(1, &vao);
+        ::glBindVertexArray(vao);
+        ::glGenBuffers(1, &vbo);
+        ::glGenBuffers(1, &ebo);
+        ::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        ::glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        ::glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+        ::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+        ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
+        ::glEnableVertexAttribArray(0);
+        ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                                reinterpret_cast<void*>(3 * sizeof(float)));
+        ::glEnableVertexAttribArray(1);
+        auto loc = ::glGetUniformLocation(material.get_native_handle(), "c");
+        ::glUseProgram(material.get_native_handle());
+        ::glUniform4f(loc ,1.0f, 0.0f, 0.0f, 1.0f);
+        bool running = true;
+        while (running)
+        {
+            ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            auto event = window.pump_event();
+            while (event && running)
+            {
+                std::visit(
+                    [&](auto&& arg)
+                    {
+                        using T = std::decay_t<decltype(arg)>;
+                        if constexpr (std::same_as<T, game::StopEvent>)
+                        {
+                            running = false;
+                        }
+                    },
+                    *event);
+                event = window.pump_event();
+            }
+            ::glUseProgram(material.get_native_handle());
+            ::glBindVertexArray(vao);
+            ::glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+            window.swap();
+        }
+    }
+    catch (game::Exception& err)
+    {
+        std::println(std::cerr, "exception {}", err);
+    }
+    catch (...)
+    {
+        std::println(std::cerr, "Unknown exception");
+    }
+
+}
+
 
 int main()
 {
@@ -74,7 +153,8 @@ int main()
             for (auto j{-10}; j < 10; j++)
             {
                 entities.emplace_back(&mesh, &material,
-                                      game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j) * 2.5f});
+                                      game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j)
+                                      * 2.5f});
             }
         }
 
@@ -138,7 +218,7 @@ int main()
             }
             if (key_states[game::Key::A])
             {
-                walk_direction += -camera.get_right();
+                walk_direction -= camera.get_right();
             }
             if (key_states[game::Key::W])
             {
@@ -146,7 +226,7 @@ int main()
             }
             if (key_states[game::Key::S])
             {
-                walk_direction += -camera.get_direction();
+                walk_direction -= camera.get_direction();
             }
 
             walk_direction = game::Vector3::normalize(walk_direction);
@@ -164,6 +244,6 @@ int main()
     {
         std::println(std::cerr, "Unknown exception");
     }
-
+    // test();
     return 0;
 }

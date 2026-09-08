@@ -2,7 +2,10 @@
 #include "mesh.hpp"
 #include "opengl.hpp"
 #include "auto_release.hpp"
+#include "vendor/opengl/glext.h"
 #include "vertex_data.hpp"
+#include <cstddef>
+#include <gl/gl.h>
 
 namespace 
 {
@@ -65,16 +68,17 @@ namespace game
     : m_vao({0u, [](auto vao){::glDeleteVertexArrays(1, &vao);}}), 
       m_vbo({0u, [](auto vbo){glDeleteBuffers(1, &vbo);}})
     {
-        ::glGenVertexArrays(1, &m_vao);
-        ::glGenBuffers(1, &m_vbo);
-        ::glBindVertexArray(m_vao);
-        ::glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-        ::glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_data), vertex_data, GL_STATIC_DRAW);
-        ::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(0));
-        ::glEnableVertexAttribArray(0);
-        ::glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
-        ::glEnableVertexAttribArray(1);
-        ::glBindVertexArray(0);
+        ::glCreateBuffers(1, &m_vbo);
+        ::glNamedBufferStorage(m_vbo, sizeof(vertex_data), vertex_data, GL_DYNAMIC_STORAGE_BIT); 
+        ::glCreateVertexArrays(1, &m_vao);
+
+        ::glVertexArrayVertexBuffer(m_vao, 0, m_vbo, 0, sizeof(VertexData));
+        ::glEnableVertexArrayAttrib(m_vao, 0);
+        ::glEnableVertexArrayAttrib(m_vao, 1);
+        ::glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
+        ::glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
+        ::glVertexArrayAttribBinding(m_vao, 0, 0);
+        ::glVertexArrayAttribBinding(m_vao, 1, 0);
     }
     void Mesh::bind() const
     {

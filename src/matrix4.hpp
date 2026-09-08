@@ -62,7 +62,7 @@ namespace game
             inline static constexpr Matrix4 perspective(float fov_radians, float width, float height, float near_p, float far_p)
             {
                 const float aspect = width / height;
-                const float tan_half_fov = std::tan(fov_radians / 2.0f); // Pozor: std::tan je constexpr až v C++26
+                const float tan_half_fov = std::tan(fov_radians / 2.0f); 
 
                 Matrix4 matrix{};
                 matrix.m_data.fill(0.0f);
