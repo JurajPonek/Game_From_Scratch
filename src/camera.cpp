@@ -28,8 +28,8 @@ namespace game
         m_view = Matrix4::look_at(m_position, m_position + m_direction, m_up);
     }
 
-    std::span<const float, 16> Camera::get_view() const { return m_view.data(); }
-    std::span<const float, 16> Camera::get_projection() const { return m_projection.data(); }
+    std::span<const float> Camera::get_view() const { return m_view.data(); }
+    std::span<const float> Camera::get_projection() const { return m_projection.data(); }
 
     void Camera::translate(const Vector3& translation)
     {

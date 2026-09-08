@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <print>
 #include "event.hpp"
+#include "exception.hpp"
 #include "key.hpp"
 #include "key_event.hpp"
 #include "log.hpp"
@@ -37,7 +38,11 @@ namespace
         const GLchar *message,
         const void *)
     {
-        std::println("{} {} {} {} {}", source, type, id, severity, message);
+        if (type == GL_DEBUG_TYPE_ERROR)
+        {
+            throw game::Exception("{} {} {} {} {}", source, type, id, severity, message);
+        }
+        game::log::error("{} {} {} {} {}", source, type, id, severity, message);
     }
 
 

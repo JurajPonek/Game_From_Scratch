@@ -12,8 +12,8 @@ namespace game
             Camera(const Vector3& position, const Vector3& look_at, const Vector3& up,
                     float fov, float width, float height, float near_plane, float far_plane);
 
-            std::span<const float, 16> get_view() const;
-            std::span<const float, 16> get_projection() const;
+            std::span<const float> get_view() const;
+            std::span<const float> get_projection() const;
             void translate(const Vector3& translation);
             Vector3 get_direction() const;
             Vector3 get_right() const;

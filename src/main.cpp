@@ -38,8 +38,12 @@ namespace
     layout(location = 1) in vec3 in_color;
 
     uniform mat4 model;
-    uniform mat4 view;
-    uniform mat4 projection;
+
+    layout(std140, binding = 0) uniform camera
+    {
+        mat4 view;
+        mat4 projection;
+    };
     out vec3 out_color;
     void main()
     {

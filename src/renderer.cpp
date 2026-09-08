@@ -1,4 +1,5 @@
 #include "renderer.hpp"
+#include "buffer_writer.hpp"
 #include "material.hpp"
 #include "opengl.hpp"
 #include "matrix4.hpp"
@@ -6,12 +7,24 @@
 #include "vector3.hpp"
 #include <gl/gl.h>
 #include "camera.hpp"
+#include "vendor/opengl/glext.h"
 
 namespace game
 {
+    Renderer::Renderer() : 
+    m_camera_buffer {sizeof(Matrix4) * 2}
+    {
+
+    }
     void Renderer::render(const Camera& camera, const Scene& scene) const
     {
         ::glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        {
+            BufferWriter writer{m_camera_buffer};
+            writer.write(camera.get_view());
+            writer.write(camera.get_projection());
+        }
+        ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_camera_buffer.get_native_handle());
         for(const auto* entity : scene.m_entities)
         {
              
@@ -24,14 +37,6 @@ namespace game
             const auto model_location = ::glGetUniformLocation(material->get_native_handle(), "model");
             ::glUniformMatrix4fv(model_location, 1, GL_FALSE, entity->get_model_matrix().data());
             
-                    
-
-            const auto view_location = ::glGetUniformLocation(material->get_native_handle(), "view");
-            ::glUniformMatrix4fv(view_location, 1, GL_FALSE, camera.get_view().data());
-
-            const auto projection_location = ::glGetUniformLocation(material->get_native_handle(), "projection");
-            ::glUniformMatrix4fv(projection_location, 1, GL_FALSE, camera.get_projection().data());
-
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->get_index_count(), GL_UNSIGNED_INT, reinterpret_cast<void*>(mesh->get_index_offset()));
             mesh->unbind();

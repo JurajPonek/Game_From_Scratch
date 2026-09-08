@@ -81,7 +81,8 @@
     DO(PFNGLACTIVETEXTUREPROC, glActiveTexture)                                                                        \
     DO(PFNGLGENERATEMIPMAPPROC, glGenerateMipmap)                                                                      \
     DO(PFNGLDEBUGMESSAGECALLBACKPROC, glDebugMessageCallback)                                                          \
-    DO(PFNGLDEBUGMESSAGECONTROLPROC, glDebugMessageControl)
+    DO(PFNGLDEBUGMESSAGECONTROLPROC, glDebugMessageControl)                                                            \
+    DO(PFNGLBINDBUFFERBASEPROC, glBindBufferBase)
 
 #define DO_DEFINE(TYPE, NAME) inline TYPE NAME;
 FOR_OPENGL_FUNCTIONS(DO_DEFINE)
