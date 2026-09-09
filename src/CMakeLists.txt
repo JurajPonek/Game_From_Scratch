@@ -10,6 +10,7 @@ add_executable(game main.cpp
                     key_event.cpp
                     mouse_event.cpp
                     bufffer.cpp
+                    resource_loader.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})
