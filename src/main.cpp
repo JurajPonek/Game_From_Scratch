@@ -11,9 +11,11 @@
 #include "opengl.hpp"
 #include "renderer.hpp"
 #include "resource_loader.hpp"
+#include "sampler.hpp"
 #include "scene.hpp"
 #include "shader.hpp"
 #include "stop_event.hpp"
+#include "texture.hpp"
 #include "vector3.hpp"
 #include "vendor/opengl/glext.h"
 #include "window.hpp"
@@ -118,6 +120,8 @@ int main(int argc, char** argv)
         game::ensure(argc == 2, "./game.exe <root_path>");
         game::Window window{800u, 600u};
         game::ResourceLoader resource_loader{argv[1]};
+        game::Texture texture{resource_loader.load_binary("container2.png"), 500, 500 };
+        game::Sampler sampler{};
         const auto vertex_shader = game::Shader(resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX);
         const auto fragment_shader = game::Shader(resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT);
         auto material = game::Material{vertex_shader, fragment_shader};
@@ -125,12 +129,12 @@ int main(int argc, char** argv)
         const auto renderer = game::Renderer{};
         std::vector<game::Entity> entities{};
         for (auto i{-10}; i < 10; i++)
-        {
+        { 
             for (auto j{-10}; j < 10; j++)
             {
                 entities.emplace_back(&mesh, &material,
                                       game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j)
-                                      * 2.5f});
+                                      * 2.5f}, &texture, &sampler);
             }
         }
 

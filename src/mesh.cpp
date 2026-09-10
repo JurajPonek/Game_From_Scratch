@@ -13,25 +13,52 @@
 
 namespace
 {
-    constexpr game::VertexData vertex_data[] = 
-    {
-        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}}, {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
-        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}}, {{-0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}},
-        {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}},  {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}},
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}},  {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 0.0f}}
-    
+    constexpr game::VertexData vertex_data[] = {
+        // Predná stena (+Z)
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}}, // 0: vľavo dole
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},  // 1: vpravo dole
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   // 2: vpravo hore
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},  // 3: vľavo hore
+
+        // Zadná stena (-Z)
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},  // 4
+        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}}, // 5
+        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 6
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},   // 7
+
+        // Pravá stena (+X)
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},  // 8
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}}, // 9
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 10
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},   // 11
+
+        // Ľavá stena (-X)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}}, // 12
+        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},  // 13
+        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   // 14
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},  // 15
+
+        // Horná stena (+Y)
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},  // 16
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},   // 17
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 18
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}}, // 19
+
+        // Spodná stena (-Y)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}}, // 20
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},  // 21
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},   // 22
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}}   // 23
     };
 
-    constexpr GLuint indices[] = 
-    {
-        0, 1, 5, 5, 4, 0,
-        1, 2, 6, 6, 5, 1,
-        2, 3, 7, 7, 6, 2,
-        3, 0, 4, 4, 7, 3,
-        3, 2, 1, 1, 0, 3,
-        4, 5, 6, 6, 7, 4
-    
-    };
+    constexpr GLuint indices[] = {
+        0,  1,  2,  2,  3,  0,  // Predná
+        4,  5,  6,  6,  7,  4,  // Zadná
+        8,  9,  10, 10, 11, 8,  // Pravá
+        12, 13, 14, 14, 15, 12, // Ľavá
+        16, 17, 18, 18, 19, 16, // Horná
+        20, 21, 22, 22, 23, 20  // Spodná
+    };  
 } // namespace
 
 namespace game
@@ -55,7 +82,7 @@ namespace game
         ::glEnableVertexArrayAttrib(m_vao, 1);
 
         ::glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
-        ::glVertexArrayAttribFormat(m_vao, 1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, color));
+        ::glVertexArrayAttribFormat(m_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
 
         ::glVertexArrayAttribBinding(m_vao, 0, 0);
         ::glVertexArrayAttribBinding(m_vao, 1, 0);

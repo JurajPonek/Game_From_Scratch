@@ -4,7 +4,6 @@
 #include <gl/gl.h>
 #include "vendor/opengl/glext.h"
 
-
 #define FOR_OPENGL_FUNCTIONS(DO)                                                                                       \
     DO(PFNGLCREATESHADERPROC, glCreateShader)                                                                          \
     DO(PFNGLSHADERSOURCEPROC, glShaderSource)                                                                          \
@@ -62,6 +61,14 @@
     DO(PFNGLCLEARNAMEDFRAMEBUFFERFIPROC, glClearNamedFramebufferfi)                                                    \
     DO(PFNGLCREATERENDERBUFFERSPROC, glCreateRenderbuffers)                                                            \
     DO(PFNGLNAMEDRENDERBUFFERSTORAGEPROC, glNamedRenderbufferStorage)                                                  \
+    DO(PFNGLGENSAMPLERSPROC, glGenSamplers)                                                                            \
+    DO(PFNGLCREATESAMPLERSPROC, glCreateSamplers)                                                                      \
+    DO(PFNGLDELETESAMPLERSPROC, glDeleteSamplers)                                                                      \
+    DO(PFNGLBINDSAMPLERPROC, glBindSampler)                                                                            \
+    DO(PFNGLSAMPLERPARAMETERIPROC, glSamplerParameteri)                                                                \
+    DO(PFNGLSAMPLERPARAMETERFPROC, glSamplerParameterf)                                                                \
+    DO(PFNGLSAMPLERPARAMETERIVPROC, glSamplerParameteriv)                                                              \
+    DO(PFNGLSAMPLERPARAMETERFVPROC, glSamplerParameterfv)                                                              \
     DO(PFNGLPROGRAMUNIFORM1IPROC, glProgramUniform1i)                                                                  \
     DO(PFNGLPROGRAMUNIFORM1FPROC, glProgramUniform1f)                                                                  \
     DO(PFNGLPROGRAMUNIFORM2FPROC, glProgramUniform2f)                                                                  \

@@ -30,13 +30,20 @@ namespace game
              
             const auto* material = entity->get_material();         
             const auto* mesh = entity->get_mesh();
-
+            const auto* texture = entity->get_texture();
+            const auto* sampler = entity->get_sampler();
         
             ::glUseProgram(material->get_native_handle());
 
             const auto model_location = ::glGetUniformLocation(material->get_native_handle(), "model");
             ::glUniformMatrix4fv(model_location, 1, GL_FALSE, entity->get_model_matrix().data());
+
+            ::glBindTextureUnit(0, texture->get_native_handle());
+            ::glBindSampler(0, sampler->get_native_handle());
             
+            const auto texture_uniform = ::glGetUniformLocation(material->get_native_handle(), "sampler");
+            ::glUniform1i(texture_uniform, 0);
+
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->get_index_count(), GL_UNSIGNED_INT, reinterpret_cast<void*>(mesh->get_index_offset()));
             mesh->unbind();

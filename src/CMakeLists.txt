@@ -11,6 +11,8 @@ add_executable(game main.cpp
                     mouse_event.cpp
                     bufffer.cpp
                     resource_loader.cpp
+                    texture.cpp
+                    sampler.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})
