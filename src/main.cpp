@@ -21,6 +21,7 @@
 #include "window.hpp"
 #include <array>
 #include <chrono>
+#include <cmath>
 #include <concepts>
 #include <gl/gl.h>
 #include <iostream>
@@ -121,6 +122,7 @@ int main(int argc, char** argv)
         game::Window window{800u, 600u};
         game::ResourceLoader resource_loader{argv[1]};
         game::Texture texture{resource_loader.load_binary("container2.png"), 500, 500 };
+        game::Texture texture_spec{resource_loader.load_binary("container2_specular.png"), 500, 500 };
         game::Sampler sampler{};
         const auto vertex_shader = game::Shader(resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX);
         const auto fragment_shader = game::Shader(resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT);
@@ -128,18 +130,21 @@ int main(int argc, char** argv)
         auto mesh = game::Mesh{};
         const auto renderer = game::Renderer{};
         std::vector<game::Entity> entities{};
+        std::vector<game::Texture*> tex_ptr {&texture, &texture_spec};
         for (auto i{-10}; i < 10; i++)
         { 
             for (auto j{-10}; j < 10; j++)
             {
                 entities.emplace_back(&mesh, &material,
                                       game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j)
-                                      * 2.5f}, &texture, &sampler);
+                                      * 2.5f}, tex_ptr, &sampler);
             }
         }
 
-        const auto scene = game::Scene{entities | std::views::transform([](const auto& e) { return &e; }) |
-                                       std::ranges::to<std::vector>()};
+        auto scene = game::Scene{entities | std::views::transform([](const auto& e) { return &e; }) |
+                                           std::ranges::to<std::vector>(),
+                                       {0.3f, 0.3f, 0.3f},
+                                       {{0.0f, -1.0f, .0f}, {.0f, .0f, .0f}}, {{0.0f, 5.0f, 1.0f},{0.5f, 0.5f, 0.5f}}};
         auto camera = game::Camera{{0.0f, 0.0f, 6.0f},
                                    {0.0f, 1.0f, 0.0f},
                                    {0.0f, 1.0f, 0.0f},
@@ -210,6 +215,11 @@ int main(int argc, char** argv)
             }
 
             walk_direction = game::Vector3::normalize(walk_direction);
+
+            static float t = 0.0f;
+            t += 0.001f;
+            scene.point.position.x = std::sin(t) * 10.0f; 
+            scene.point.position.z = std::cos(t) * 10.0f;
 
             camera.translate(game::Vector3::normalize(walk_direction) * speed * dt);
             renderer.render(camera, scene);

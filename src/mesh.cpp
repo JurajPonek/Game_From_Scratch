@@ -14,41 +14,41 @@
 namespace
 {
     constexpr game::VertexData vertex_data[] = {
-        // Predná stena (+Z)
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}}, // 0: vľavo dole
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},  // 1: vpravo dole
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   // 2: vpravo hore
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},  // 3: vľavo hore
+        // Predná stena (+Z) -> normála {0.0f, 0.0f, 1.0f}
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}}, // 0
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},  // 1
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},   // 2
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},  // 3
 
-        // Zadná stena (-Z)
-        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}},  // 4
-        {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}}, // 5
-        {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 6
-        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},   // 7
+        // Zadná stena (-Z) -> normála {0.0f, 0.0f, -1.0f}
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},  // 4
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}}, // 5
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},  // 6
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},   // 7
 
-        // Pravá stena (+X)
-        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f}},  // 8
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}}, // 9
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 10
-        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f}},   // 11
+        // Pravá stena (+X) -> normála {1.0f, 0.0f, 0.0f}
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},  // 8
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}}, // 9
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},  // 10
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},   // 11
 
-        // Ľavá stena (-X)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}}, // 12
-        {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f}},  // 13
-        {{-0.5f, 0.5f, 0.5f}, {1.0f, 1.0f}},   // 14
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}},  // 15
+        // Ľavá stena (-X) -> normála {-1.0f, 0.0f, 0.0f}
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}}, // 12
+        {{-0.5f, -0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},  // 13
+        {{-0.5f, 0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},   // 14
+        {{-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},  // 15
 
-        // Horná stena (+Y)
-        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f}},  // 16
-        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f}},   // 17
-        {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f}},  // 18
-        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f}}, // 19
+        // Horná stena (+Y) -> normála {0.0f, 1.0f, 0.0f}
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},  // 16
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},   // 17
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},  // 18
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}, // 19
 
-        // Spodná stena (-Y)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f}}, // 20
-        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f}},  // 21
-        {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f}},   // 22
-        {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f}}   // 23
+        // Spodná stena (-Y) -> normála {0.0f, -1.0f, 0.0f}
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}}, // 20
+        {{0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},  // 21
+        {{0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},   // 22
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}}   // 23
     };
 
     constexpr GLuint indices[] = {
@@ -80,12 +80,15 @@ namespace game
 
         ::glEnableVertexArrayAttrib(m_vao, 0);
         ::glEnableVertexArrayAttrib(m_vao, 1);
+        ::glEnableVertexArrayAttrib(m_vao, 2);
 
         ::glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, position));
-        ::glVertexArrayAttribFormat(m_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
+        ::glVertexArrayAttribFormat(m_vao,  1, 3, GL_FLOAT, GL_FALSE, offsetof(VertexData, normal));
+        ::glVertexArrayAttribFormat(m_vao, 2, 2, GL_FLOAT, GL_FALSE, offsetof(VertexData, uv));
 
         ::glVertexArrayAttribBinding(m_vao, 0, 0);
         ::glVertexArrayAttribBinding(m_vao, 1, 0);
+        ::glVertexArrayAttribBinding(m_vao, 2, 0);
     }
     void Mesh::bind() const { ::glBindVertexArray(m_vao); }
     void Mesh::unbind() const { ::glBindVertexArray(0); }

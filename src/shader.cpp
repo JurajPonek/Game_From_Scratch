@@ -1,6 +1,7 @@
 
 #include "shader.hpp"
 #include "error.hpp"
+#include "opengl.hpp"
 #include "vendor/opengl/glext.h"
 #include <gl/gl.h>
 #include <stdexcept>
@@ -32,10 +33,18 @@ namespace game
         const ::GLint lenghts[] = {static_cast<::GLint>(source.length())};
         ::glShaderSource(m_handle, 1, string, lenghts);
         ::glCompileShader(m_handle);
+
         ::GLint res{};
         ::glGetShaderiv(m_handle, GL_COMPILE_STATUS, &res);
+        if (res != GL_TRUE)
+        {
+            char log[512];
+            ::glGetShaderInfoLog(m_handle, sizeof(log), nullptr, log);
 
-        ensure(res, "Failed to compile {} shader", m_type);
+            ensure(res, "Failed to compile {} shader\n{}", m_type, log);
+        }
+
+        
     }
     ShaderType Shader::get_type() const { return m_type; }
     ::GLuint Shader::get_native_handle() const { return m_handle; }

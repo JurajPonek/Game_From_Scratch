@@ -13,5 +13,6 @@ namespace game
             void render(const Camera& camera, const Scene& scene) const;
         private:
             Buffer m_camera_buffer;
+            Buffer m_light_buffer; 
     };
 }

@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <span>
+#include <type_traits>
 namespace game
 {
     class BufferWriter
@@ -24,7 +25,14 @@ namespace game
           m_offset += data.size_bytes();
       }
 
-      private : 
+      template<typename T>
+      void write(const T& obj) requires(std::is_trivially_copyable_v<T>)
+      {
+          auto span = std::span<const T>{&obj, 1};
+          write(span);
+      }
+
+    private: 
         const Buffer& m_buffer;
         std::size_t m_offset;
     };

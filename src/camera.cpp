@@ -51,5 +51,9 @@ namespace game
         m_direction = create_direction(m_pitch, m_yaw);
         m_view = Matrix4::look_at(m_position, m_position + m_direction, m_up);
     }
+    Vector3 Camera::get_position() const
+    {
+        return m_position;
+    }
 
 } // namespace game

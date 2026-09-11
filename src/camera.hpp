@@ -17,6 +17,7 @@ namespace game
             void translate(const Vector3& translation);
             Vector3 get_direction() const;
             Vector3 get_right() const;
+            Vector3 get_position() const;
             void adjust_yaw(float adjust);
             void adjust_pitch(float adjust);
         private:
