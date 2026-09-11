@@ -124,20 +124,22 @@ int main(int argc, char** argv)
         game::Texture texture{resource_loader.load_binary("container2.png"), 500, 500 };
         game::Texture texture_spec{resource_loader.load_binary("container2_specular.png"), 500, 500 };
         game::Sampler sampler{};
+        const game::Texture* textures[]{&texture, &texture_spec};
+        const game::Sampler* samplers[]{&sampler, &sampler};
+        const auto tex_samp = std::views::zip(textures, samplers) | std::ranges::to<std::vector>();
         const auto vertex_shader = game::Shader(resource_loader.load_string("simple.vert"), game::ShaderType::VERTEX);
         const auto fragment_shader = game::Shader(resource_loader.load_string("simple.frag"), game::ShaderType::FRAGMENT);
         auto material = game::Material{vertex_shader, fragment_shader};
         auto mesh = game::Mesh{};
         const auto renderer = game::Renderer{};
         std::vector<game::Entity> entities{};
-        std::vector<game::Texture*> tex_ptr {&texture, &texture_spec};
         for (auto i{-10}; i < 10; i++)
         { 
             for (auto j{-10}; j < 10; j++)
             {
                 entities.emplace_back(&mesh, &material,
                                       game::Vector3{static_cast<float>(i) * 2.5f, -2.0f, static_cast<float>(j)
-                                      * 2.5f}, tex_ptr, &sampler);
+                                      * 2.5f}, tex_samp);
             }
         }
 

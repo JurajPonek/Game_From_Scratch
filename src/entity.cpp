@@ -1,19 +1,22 @@
 #include "entity.hpp"
+#include "matrix4.hpp"
 #include "sampler.hpp"
 #include "texture.hpp"
+#include <tuple>
 #include <vector>
 
 namespace game
 {
-    Entity::Entity(const Mesh* mesh, const Material* material, const Vector3& position, const std::vector<Texture*> texture, const Sampler* sampler)
-    :   m_model{position}, m_mesh(mesh), m_material(material), m_texture{texture}, m_sampler{sampler}
+    Entity::Entity(const Mesh* mesh, const Material* material, const Vector3& position, const std::vector<std::tuple<const Texture*, const Sampler*>>& textures)
+    :   m_model{position}, m_mesh(mesh), m_material(material), m_textures{textures} 
     {
 
     }
 
-    std::span<const float> Entity::get_model_matrix() const
+    const Matrix4& Entity::get_model_matrix() const
+    
     {
-        return m_model.data();
+        return m_model;
     }
 
     const Mesh* Entity::get_mesh() const
@@ -24,13 +27,9 @@ namespace game
     {
         return m_material;
     }
-    std::vector<Texture*> Entity::get_textures() const
+    std::span<const std::tuple<const Texture*, const Sampler*>> Entity::get_textures() const
     {
-        return m_texture; 
-    }
-    const Sampler* Entity::get_sampler() const
-    {
-        return m_sampler; 
+        return m_textures;
     }
 
 

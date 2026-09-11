@@ -21,5 +21,12 @@ namespace game
         ensure(!!obj, message, std::forward<Args>(args)...);
     }
 
+    template<typename T, typename... Args>
+    void ensure(const T& obj, std::string_view message, Args&& ...args)
+    {
+        ensure(!!obj, message, std::forward<Args>(args)...);
+    }
+
+
 
 }

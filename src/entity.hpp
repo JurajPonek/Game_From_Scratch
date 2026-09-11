@@ -7,6 +7,7 @@
 #include "texture.hpp"
 #include "vector3.hpp"
 #include <span>
+#include <tuple>
 #include <vector>
 
 
@@ -15,19 +16,19 @@ namespace game
     class Entity
     {
       public:
-        Entity(const Mesh* mesh, const Material* material, const Vector3& position, const std::vector<Texture*> texture, const Sampler* sampler);
+        Entity(const Mesh* mesh, const Material* material, const Vector3& position,
+               const std::vector<std::tuple<const Texture*, const Sampler*>>& textures);
 
-        std::span<const float> get_model_matrix() const;
+        const Matrix4& get_model_matrix() const;
         const Mesh* get_mesh() const;
         const Material* get_material() const;
-        std::vector<Texture*> get_textures() const;
-        const Sampler* get_sampler() const;
+        std::span<const std::tuple<const Texture*, const Sampler*>> get_textures() const;
+
       private:
         Matrix4 m_model;
         const Mesh* m_mesh;
         const Material* m_material;
-        std::vector<Texture*> m_texture;
-        const Sampler* m_sampler;
+        std::vector<std::tuple<const Texture*, const Sampler*>> m_textures;
     };
 
 } // namespace game

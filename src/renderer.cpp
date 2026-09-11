@@ -52,28 +52,11 @@ namespace game
         ::glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_light_buffer.get_native_handle());
         for(const auto* entity : scene.m_entities)
         {
-             
             const auto* material = entity->get_material();         
             const auto* mesh = entity->get_mesh();
-            const auto textures = entity->get_textures();
-            const auto* sampler = entity->get_sampler();
-        
-            ::glUseProgram(material->get_native_handle());
-
-            const auto model_location = ::glGetUniformLocation(material->get_native_handle(), "model");
-            ::glUniformMatrix4fv(model_location, 1, GL_FALSE, entity->get_model_matrix().data());
-            for (const auto& [index, tex] : entity->get_textures() | std::views::enumerate)
-            {
-                ::glBindTextureUnit(index, tex->get_native_handle());
-                ::glBindSampler(index, sampler->get_native_handle());
-                const auto uniform_name = std::format("tex{}", index);
-                const auto texture_uniform = ::glGetUniformLocation(material->get_native_handle(), uniform_name.c_str());
-                ::glUniform1i(texture_uniform, index);
-            }
-            
-            
-        
-
+            material->use();
+            material->set_uniform("model", entity->get_model_matrix());
+            material->bind_textures(entity->get_textures()); 
             mesh->bind();
             ::glDrawElements(GL_TRIANGLES, mesh->get_index_count(), GL_UNSIGNED_INT, reinterpret_cast<void*>(mesh->get_index_offset()));
             mesh->unbind();
