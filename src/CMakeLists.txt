@@ -13,6 +13,8 @@ add_executable(game main.cpp
                     resource_loader.cpp
                     texture.cpp
                     sampler.cpp
+                    debug_ui.cpp
+                    mouse_button_evet.cpp
                     
 )
 target_include_directories(game PUBLIC ${PROJECT_SOURCE_DIR})

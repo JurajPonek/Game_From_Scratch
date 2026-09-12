@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "debug_ui.hpp"
 #include "entity.hpp"
 #include "error.hpp"
 #include "exception.hpp"
@@ -7,6 +8,7 @@
 #include "log.hpp"
 #include "material.hpp"
 #include "mesh.hpp"
+#include "mouse_button_evet.hpp"
 #include "mouse_event.hpp"
 #include "opengl.hpp"
 #include "renderer.hpp"
@@ -159,6 +161,7 @@ int main(int argc, char** argv)
         auto key_states = std::unordered_map<game::Key, bool>{};
         auto last_time = std::chrono::high_resolution_clock::now();
         float speed = 20.0f;
+        const game::DebugUI ui{window.get_native_handle()};
 
         while (running)
         {
@@ -191,6 +194,10 @@ int main(int argc, char** argv)
                             const float delta_y = arg.get_delta_y() * sensitivity;
                             camera.adjust_yaw(delta_x);
                             camera.adjust_pitch(-delta_y);
+                        }
+                        else if constexpr (std::is_same_v<T, game::MouseButtonEvent>)
+                        {
+                            ui.add_mouse_event(arg);
                         }
                     }
 
@@ -225,6 +232,7 @@ int main(int argc, char** argv)
 
             camera.translate(game::Vector3::normalize(walk_direction) * speed * dt);
             renderer.render(camera, scene);
+            ui.render();
             window.swap();
         }
     }

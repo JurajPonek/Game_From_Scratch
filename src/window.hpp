@@ -18,7 +18,7 @@ namespace game
             Window& operator=(Window&&) = default;
             std::optional<Event> pump_event() const;
             void swap() const;
-            
+            ::HWND get_native_handle() const; 
 
             
         private:

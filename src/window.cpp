@@ -1,5 +1,6 @@
 #include "window.hpp"
 #include <hidusage.h>
+#include "windowsx.h"
 #include "auto_release.hpp"
 #include <gl/gl.h>
 #include <libloaderapi.h>
@@ -16,6 +17,7 @@
 #include "key.hpp"
 #include "key_event.hpp"
 #include "log.hpp"
+#include "mouse_button_evet.hpp"
 #include "mouse_event.hpp"
 #include "opengl.hpp"
 #include "stop_event.hpp"
@@ -72,6 +74,17 @@ namespace
                     const auto y= raw.data.mouse.lLastY;
                     g_event_queqe.emplace(game::MouseEvent{static_cast<float>(x), static_cast<float>(y)});
                 }
+                break;
+            }
+            case WM_LBUTTONUP:
+            {
+                g_event_queqe.emplace(game::MouseButtonEvent{static_cast<float>(GET_X_LPARAM(lparam)), static_cast<float>(GET_Y_LPARAM(lparam)), game::MouseButtonState::UP});
+                break;
+            }
+            case WM_LBUTTONDOWN:
+            {
+                g_event_queqe.emplace(
+                    game::MouseButtonEvent{static_cast<float>(GET_X_LPARAM(lparam)), static_cast<float>(GET_Y_LPARAM(lparam)), game::MouseButtonState::DOWN});
                 break;
             }
         }
@@ -295,5 +308,10 @@ namespace game
     void Window::swap() const
     {
         ::SwapBuffers(m_dc); 
+    }
+
+    ::HWND Window::get_native_handle() const
+    {
+        return m_handle;
     }
 };
