@@ -1,4 +1,5 @@
 #include "window.hpp"
+#include <cstdint>
 #include <hidusage.h>
 #include "windowsx.h"
 #include "auto_release.hpp"
@@ -40,11 +41,15 @@ namespace
         const GLchar *message,
         const void *)
     {
+        if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+        {
+            return;
+        }
         if (type == GL_DEBUG_TYPE_ERROR)
         {
             throw game::Exception("{} {} {} {} {}", source, type, id, severity, message);
         }
-        game::log::error("{} {} {} {} {}", source, type, id, severity, message);
+        game::log::info("{} {} {} {} {}", source, type, id, severity, message);
     }
 
 
@@ -224,7 +229,7 @@ namespace
 namespace game
 { 
     Window::Window(std::uint32_t width, std::uint32_t height) 
-    : m_handle(),m_dc({}), m_windowClass({})
+    : m_handle(),m_dc({}), m_windowClass({}), m_width{width}, m_height{height}
     {
         
         m_windowClass = {
@@ -313,5 +318,14 @@ namespace game
     ::HWND Window::get_native_handle() const
     {
         return m_handle;
+    }
+
+    std::uint32_t Window::get_width() const
+    {
+        return m_width;
+    }
+    std::uint32_t Window::get_height() const
+    {
+        return m_height;
     }
 };

@@ -34,9 +34,7 @@ add_library(imgui STATIC
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
     ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    
     ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-    
     ${imgui_SOURCE_DIR}/backends/imgui_impl_win32.cpp  
 )
 
@@ -47,6 +45,24 @@ target_include_directories(imgui PUBLIC
 
 target_link_libraries(imgui PUBLIC dwmapi)
 
+FetchContent_Declare(
+    imguizmo
+    GIT_REPOSITORY https://github.com/CedricGuillemet/ImGuizmo.git
+    GIT_TAG        master
+    GIT_SHALLOW    TRUE
+)
+FetchContent_MakeAvailable(imguizmo)
+
+add_library(imguizmo STATIC
+    ${imguizmo_SOURCE_DIR}/ImGuizmo.cpp
+)
+
+target_include_directories(imguizmo PUBLIC
+    ${imguizmo_SOURCE_DIR}
+)
+
+target_link_libraries(imguizmo PUBLIC imgui)
+
 add_subdirectory(src)
 
-target_link_libraries(game PRIVATE stb imgui)
+target_link_libraries(game PRIVATE stb imgui imguizmo)

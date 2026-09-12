@@ -19,13 +19,15 @@ namespace game
             std::optional<Event> pump_event() const;
             void swap() const;
             ::HWND get_native_handle() const; 
-
+            std::uint32_t get_width() const;
+            std::uint32_t get_height() const;
             
         private:
             AutoRelease<::HWND, nullptr> m_handle; 
             AutoRelease<::HDC> m_dc;
             WNDCLASS m_windowClass;
-
+            std::uint32_t m_width;
+            std::uint32_t m_height;
 
 
 

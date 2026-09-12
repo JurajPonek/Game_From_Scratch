@@ -1,7 +1,6 @@
 #include "texture.hpp"
 #include "opengl.hpp"
 #include <cstdint>
-#include <gl/gl.h>
 #include <memory>
 #include "error.hpp"
 #define STB_IMAGE_IMPLEMENTATION
@@ -11,8 +10,8 @@ namespace game
     Texture::Texture(std::span<const std::byte> data, std::uint32_t width, std::uint32_t height)
         : m_handle{0u, [](auto texture) { ::glDeleteTextures(1u, &texture); }}
     {
-        auto w = static_cast<int>(width);
-        auto h = static_cast<int>(height);
+        int w{};
+        int h{}; 
         auto num_channels = int{3};
         std::unique_ptr<::stbi_uc, decltype(&::stbi_image_free)> raw_data{
             ::stbi_load_from_memory(reinterpret_cast<const stbi_uc*>(data.data()), static_cast<int>(data.size()), &w,

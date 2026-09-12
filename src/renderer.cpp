@@ -13,13 +13,19 @@
 
 namespace
 {
+    struct PointLightBufer
+    {
+        alignas(16) game::Vector3 point;
+        alignas(16) game::Color color;
+        alignas(16) game::Vector3 attenuation;
+    };
     struct LightBuffer
     {
         alignas(16) game::Color ambient;
         alignas(16) game::Vector3 direction;
         alignas(16) game::Color direction_color;
-        alignas(16) game::Vector3 point;
-        alignas(16) game::Color point_color;
+        int num_points;
+        
     };
 
 }
@@ -28,7 +34,7 @@ namespace
 namespace game
 {
     Renderer::Renderer() : 
-    m_camera_buffer {sizeof(Matrix4) * 2 + sizeof(Vector3)}, m_light_buffer(sizeof(LightBuffer))
+    m_camera_buffer {sizeof(Matrix4) * 2 + sizeof(Vector3)}, m_light_buffer(10240u)
     {
 
     }
@@ -43,13 +49,17 @@ namespace game
         }
 
         {
-            LightBuffer light_buffer{scene.ambient, scene.directional.direction, scene.directional.color, scene.point.position, scene.point.color};
+            LightBuffer light_buffer{scene.ambient, scene.directional.direction, scene.directional.color, static_cast<int>(scene.points.size())};
             BufferWriter writer{m_light_buffer};
             writer.write(light_buffer);
-            
+            for (const auto& point : scene.points)
+            {
+                auto point_light_buffer = PointLightBufer{point.position, point.color, {point.const_attenuation, point.linear_attenuation, point.quad_attenuation}};
+                writer.write(point_light_buffer);
+            }
         }
         ::glBindBufferBase(GL_UNIFORM_BUFFER, 0, m_camera_buffer.get_native_handle());
-        ::glBindBufferBase(GL_UNIFORM_BUFFER, 1, m_light_buffer.get_native_handle());
+        ::glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, m_light_buffer.get_native_handle());
         for(const auto* entity : scene.m_entities)
         {
             const auto* material = entity->get_material();         
